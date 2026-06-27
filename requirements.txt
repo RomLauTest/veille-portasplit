@@ -1,0 +1,14 @@
+# Dependances de la veille PortaSplit
+# Installation : pip install -r requirements.txt
+
+requests>=2.31.0
+
+# Fait utiliser a Python le magasin de certificats du systeme (Windows/macOS).
+# Indispensable derriere un proxy TLS d'entreprise (Zscaler, Netskope...),
+# sinon erreur SSL "CERTIFICATE_VERIFY_FAILED". Sans danger ailleurs.
+truststore>=0.9.0
+
+# Optionnel : seulement si vous utilisez le flag --playwright
+# (sites JS / anti-bot comme Amazon ou Leroy Merlin).
+# Apres l'install, lancez une fois :  python -m playwright install chromium
+playwright>=1.43.0 ; python_version >= "3.8"

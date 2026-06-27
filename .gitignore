@@ -1,0 +1,11 @@
+# Journaux et fichiers temporaires (NE PAS versionner)
+veille.log
+cron.log
+__pycache__/
+*.pyc
+
+# Navigateurs Playwright eventuellement installes en local
+.cache/
+
+# IMPORTANT : etat_stock.json N'EST PAS ignore -> il est versionne volontairement
+# pour servir de "memoire" persistante entre les executions GitHub Actions.
