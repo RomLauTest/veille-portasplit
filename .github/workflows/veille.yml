@@ -1,0 +1,63 @@
+name: Veille PortaSplit
+
+# Surveille le stock toutes les 30 min sur l'infrastructure GitHub (gratuit),
+# sans avoir besoin de laisser un PC allume.
+
+on:
+  schedule:
+    # Toutes les 30 minutes (heure UTC). GitHub peut decaler le declenchement
+    # de quelques minutes en periode de charge : c'est normal.
+    - cron: "*/30 * * * *"
+  # Permet aussi de lancer la veille a la main depuis l'onglet "Actions".
+  workflow_dispatch:
+
+# Necessaire pour que le job puisse re-commiter etat_stock.json (la memoire).
+permissions:
+  contents: write
+
+# Evite que deux executions se chevauchent.
+concurrency:
+  group: veille-portasplit
+  cancel-in-progress: false
+
+jobs:
+  verifier-stock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Installer les dependances
+        run: pip install -r requirements.txt
+
+      - name: Installer Chromium (Playwright)
+        run: python -m playwright install --with-deps chromium
+
+      - name: Lancer la veille
+        env:
+          # Topic ntfy fourni via un secret GitHub (jamais ecrit dans le code).
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          # Optionnels :
+          NTFY_SERVER: ${{ secrets.NTFY_SERVER }}
+          NTFY_PRIORITY: ${{ secrets.NTFY_PRIORITY }}
+        run: python monitor_stock.py --playwright
+
+      - name: Memoriser l'etat (commit de etat_stock.json)
+        if: always()   # on sauvegarde meme si une etape precedente a echoue
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add etat_stock.json
+          # Ne commite que s'il y a un changement reel.
+          if git diff --cached --quiet; then
+            echo "Aucun changement d'etat a sauvegarder."
+          else
+            git commit -m "maj etat stock [skip ci]"
+            git push
+          fi
