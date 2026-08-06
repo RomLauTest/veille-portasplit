@@ -189,6 +189,23 @@ exécute cette commande (mode `--loop`).
 
 ## 4 bis. Hébergement gratuit sur GitHub Actions (sans laisser un PC allumé)
 
+> ⏸️ **Veille en pause depuis le 06/08/2026.** Le déclencheur `schedule` du
+> workflow est mis en commentaire : plus aucune exécution automatique, plus de
+> notification ni de mail d'échec. **Toute la configuration est conservée** —
+> secrets, script, `etat_stock.json`.
+>
+> **Pour relancer une prochaine veille** : dans
+> [`.github/workflows/veille.yml`](.github/workflows/veille.yml), enlever les
+> `#` devant les deux lignes `schedule:` / `- cron:`, puis pousser sur `main`.
+> Le workflow reste lançable à la main entre-temps (onglet **Actions** >
+> *Veille PortaSplit* > **Run workflow**).
+>
+> À savoir en relançant : malgré le cron toutes les 30 min, GitHub met les
+> workflows planifiés en file basse priorité. Les exécutions réelles observées
+> étaient espacées de **1 h à 3 h 20** (médiane ≈ 2 h). Pour une vraie cadence
+> de 30 min, il faut un déclencheur externe qui appelle l'API GitHub
+> (`workflow_dispatch` / `repository_dispatch` ne sont pas dépriorisés).
+
 C'est la méthode recommandée : la veille tourne **toutes les 30 min sur
 l'infrastructure GitHub**, gratuitement, sans aucun serveur ni PC allumé. Le
 fichier [`.github/workflows/veille.yml`](.github/workflows/veille.yml) est déjà

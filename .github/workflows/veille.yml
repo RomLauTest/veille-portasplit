@@ -1,14 +1,32 @@
 name: Veille PortaSplit
 
-# Surveille le stock toutes les 30 min sur l'infrastructure GitHub (gratuit),
-# sans avoir besoin de laisser un PC allume.
+# Surveille le stock sur l'infrastructure GitHub (gratuit), sans avoir besoin
+# de laisser un PC allume.
+#
+# ---------------------------------------------------------------------------
+# VEILLE EN PAUSE (06/08/2026)
+#
+# La veille automatique est desactivee : le bloc "schedule" ci-dessous est mis
+# en commentaire. Plus aucune execution automatique, donc plus de notifications
+# ni de mails d'echec. Toute la configuration est conservee telle quelle.
+#
+# POUR REACTIVER : enlever les "#" devant les 2 lignes "schedule" / "- cron"
+# ci-dessous, puis pousser sur la branche par defaut (main). C'est tout : les
+# secrets (NTFY_TOPIC, etc.) et le reste du workflow sont inchanges.
+#
+# A savoir en reactivant : malgre le cron toutes les 30 min, GitHub met les
+# workflows planifies en file basse priorite. Les executions reelles etaient
+# espacees de 1h a 3h20 (mediane ~2h). Pour une vraie cadence de 30 min il
+# faut un declencheur externe qui appelle l'API GitHub (workflow_dispatch /
+# repository_dispatch ne sont pas deprioritises).
+# ---------------------------------------------------------------------------
 
 on:
-  schedule:
-    # Toutes les 30 minutes (heure UTC). GitHub peut decaler le declenchement
-    # de quelques minutes en periode de charge : c'est normal.
-    - cron: "*/30 * * * *"
-  # Permet aussi de lancer la veille a la main depuis l'onglet "Actions".
+  # schedule:
+  #   - cron: "*/30 * * * *"   # toutes les 30 minutes (heure UTC)
+
+  # Reste disponible : permet de lancer la veille a la main, ponctuellement,
+  # depuis l'onglet "Actions" > "Veille PortaSplit" > "Run workflow".
   workflow_dispatch:
 
 # Necessaire pour que le job puisse re-commiter etat_stock.json (la memoire).
